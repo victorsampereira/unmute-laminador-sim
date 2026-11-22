@@ -106,6 +106,17 @@ await page.waitForTimeout(600);
 await shot('02b-guias-zoom');
 await page.evaluate(() => (window.sim._debug.player.zoom = false));
 
+const audio = await page.evaluate(async () => {
+  const snd = window.sim._debug.sound;
+  let peak = 0;
+  for (let i = 0; i < 20; i++) {
+    peak = Math.max(peak, snd.level());
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  return { state: snd.ctx?.state, peak };
+});
+ok(audio.state === 'running' && audio.peak > 0.01, `áudio tocando (${audio.state}, pico RMS ${audio.peak.toFixed(3)})`);
+
 console.log('\n== 4. Sair para o galpão (WASD + colisão + porta automática)');
 ok(await walkTo(4.8, 7.6), 'chegou à porta');
 ok(await walkTo(4.8, 3.6), 'atravessou a porta automática');

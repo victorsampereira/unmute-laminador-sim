@@ -178,7 +178,7 @@ window.sim = {
   setImmersive: (enabled) => execute({ type: 'set_immersive', enabled }),
   snapshot: (w) => captureFrame(w),
   faultTypes: Object.keys(FAULT_TYPES),
-  _debug: { player, camera, world, renderer, scene },
+  _debug: { player, camera, world, renderer, scene, sound },
 };
 new Bridge(sim, execute);
 
@@ -196,6 +196,8 @@ function enter() {
   }
 }
 $('overlay').addEventListener('click', enter);
+// o navegador só libera áudio após um gesto do usuário: qualquer clique/tecla inicia ou retoma o som
+for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => sound.init(), { capture: true });
 $('real').addEventListener('click', (e) => {
   e.stopPropagation();
   setImmersive(!sim.immersive);
